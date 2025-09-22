@@ -1,7 +1,14 @@
 import React from 'react';
 import './PatientDashboard.css';
+import { useNavigate } from "react-router-dom";
 
 const PatientDashboard = () => {
+  const navigate = useNavigate();
+
+  const handleBookConsultation = () => {
+    navigate("/book-consultation");
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-content">
@@ -38,10 +45,17 @@ const PatientDashboard = () => {
 
         {/* Quick Actions */}
         <div className="quick-actions">
-          <div className="action-card">
-            <div className="action-icon video-icon">📹</div>
-            <div className="action-label">Book Consultation</div>
-          </div>
+          <div
+  className="action-card"
+  role="button"
+  tabIndex={0}
+  onClick={() => { console.log("Book Consultation clicked"); navigate("/book-consultation"); }}
+  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { console.log("Book Consultation (key)"); navigate("/book-consultation"); } }}
+  style={{ cursor: "pointer" }}
+>
+  <div className="action-icon video-icon">📹</div>
+  <div className="action-label">Book Consultation</div>
+</div>
           <div className="action-card">
             <div className="action-icon upload-icon">📤</div>
             <div className="action-label">Upload Reports</div>
