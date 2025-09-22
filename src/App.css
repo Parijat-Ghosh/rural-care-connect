@@ -1,38 +1,142 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+/* ---------- GLOBAL ---------- */
+body {
+  margin: 0;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+/* ---------- APP CONTAINER ---------- */
+.container {
+  width: 90%;
+  max-width: 650px;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  animation: fadeIn 0.6s ease;
+}
+
+h2, h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #222;
+  font-weight: 600;
+}
+
+/* ---------- SPECIALTY GRID ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.08),
+              -4px -4px 10px rgba(255,255,255,0.6);
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 6px 6px 14px rgba(0,0,0,0.15),
+              -6px -6px 14px rgba(255,255,255,0.8);
+}
+
+.icon {
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+/* ---------- DOCTOR CARD ---------- */
+.doctor-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.doctor-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.doctor-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eee;
+}
+
+.tag {
+  display: inline-block;
+  background: #eef2ff;
+  color: #333;
+  border-radius: 12px;
+  padding: 4px 12px;
+  margin-right: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.available {
+  background: #4caf50;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+/* ---------- BUTTONS ---------- */
+button {
+  padding: 12px 20px;
+  margin: 10px 8px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+button.selected {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+button:not(.selected) {
+  background: #f5f5f5;
+  color: #333;
+}
+
+/* ---------- CONFIRM CARD ---------- */
+.confirm-card {
+  background: #fdfdfd;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
