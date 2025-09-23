@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 import "./MedicoDashboard.css";
 
 const MedicoDashboard = () => {
@@ -36,10 +37,11 @@ const MedicoDashboard = () => {
           <div className="action-icon">📹</div>
           <p>Book Consultation</p>
         </div>
-        <div className="action-card">
+        {/* Make Upload Reports card clickable */}
+        <Link to="/reports" className="action-card" style={{ textDecoration: "none", color: "inherit" }}>
           <div className="action-icon">📤</div>
           <p>Upload Reports</p>
-        </div>
+        </Link>
       </section>
 
       {/* Upcoming Appointments */}
@@ -111,16 +113,16 @@ const MedicoDashboard = () => {
           <p>AI Doctor</p>
           <span className="arrow">→</span>
         </div>
-        <div className="service-item">
+        <Link to="/prescriptions" className="service-item" style={{ textDecoration: "none", color: "inherit" }}>
           <span>💊</span>
           <p>Prescriptions</p>
           <span className="arrow">→</span>
-        </div>
-        <div className="service-item">
+        </Link>
+        <Link to="/healthrecords" className="service-item" style={{ textDecoration: "none", color: "inherit" }}>
           <span>📋</span>
           <p>Health Records</p>
           <span className="arrow">→</span>
-        </div>
+        </Link>
       </section>
     </div>
   );

@@ -1,3 +1,0 @@
-import UploadReports from './UploadReports';
-function App() { return <UploadReports />; }
-export default App;
