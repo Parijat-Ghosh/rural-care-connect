@@ -1,7 +1,0 @@
-import Prescriptions from './Prescriptions';
-
-function App() {
-  return <Prescriptions />;
-}
-
-export default App;
