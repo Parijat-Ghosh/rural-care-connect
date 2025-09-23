@@ -1,29 +1,56 @@
+// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import PatientDashboard from "./PatientDashboard";             // dashboard
-import BookConsultationApp from "./book_consultationmain/App"; // booking flow
-import UploadReports from "./Suman_source/UploadReports";      // upload reports
-import Prescriptions from "./Suman_source/Prescriptions";      // prescriptions
-import HealthRecords from "./Suman_source/HealthRecords";      // health records
+import PatientDashboard from "./PatientDashboard";
+import BookConsultationApp from "./book_consultationmain/App";
 
-function App() {
+// Pages moved into src/Suman_source (use exact filenames)
+import UploadReports from "./Suman_source/UploadReports.jsx";
+import Prescriptions from "./Suman_source/Prescriptions.jsx";
+import HealthRecords from "./Suman_source/HealthRecords.jsx";
+
+// SOS page (you created SOSPg.jsx)
+import SOSPg from "./SOSPg.jsx";
+
+/** Small NotFound page so route errors are visible instead of blank screen */
+function NotFound() {
+  return (
+    <div style={{ padding: 24 }}>
+      <h2>Page not found</h2>
+      <p>
+        The route you requested doesn't exist. Go back to{" "}
+        <a href="/" style={{ color: "#4f46e5" }}>
+          Dashboard
+        </a>
+        .
+      </p>
+    </div>
+  );
+}
+
+export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Dashboard default */}
+        {/* Home / Dashboard */}
         <Route path="/" element={<PatientDashboard />} />
 
-        {/* Booking flow */}
+        {/* Booking flow (nested routes inside the book_consultation app) */}
         <Route path="/book-consultation/*" element={<BookConsultationApp />} />
 
-        {/* Other sections */}
+        {/* Other standalone pages */}
         <Route path="/upload-reports" element={<UploadReports />} />
         <Route path="/prescriptions" element={<Prescriptions />} />
         <Route path="/health-records" element={<HealthRecords />} />
+
+        {/* SOS emergency page */}
+        <Route path="/sos" element={<SOSPg />} />
+
+        {/* Fallback */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
 }
 
-export default App;
