@@ -22,11 +22,11 @@ export const errorHandler = (
     query: req.query
   });
 
-
+  // Default error
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal server error';
 
-
+  // Mongoose validation error
   if (err.name === 'ValidationError') {
     statusCode = 400;
     const validationErrors = Object.values((err as any).errors).map((error: any) => ({
@@ -40,20 +40,20 @@ export const errorHandler = (
     });
   }
 
-  
+  // Mongoose cast error (invalid ObjectId)
   if (err.name === 'CastError') {
     statusCode = 400;
     message = 'Invalid ID format';
   }
 
- 
+  // MongoDB duplicate key error
   if ((err as any).code === 11000) {
     statusCode = 409;
     const field = Object.keys((err as any).keyValue)[0];
     message = `Patient with this ${field} already exists`;
   }
 
-
+  // JWT errors
   if (err.name === 'JsonWebTokenError') {
     statusCode = 401;
     message = 'Invalid token';

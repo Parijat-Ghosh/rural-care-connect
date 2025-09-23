@@ -1,3 +1,4 @@
+
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 
@@ -18,7 +19,7 @@ export const validateBody = (schema: z.ZodSchema<any>) => {
       });
     }
     
- 
+    // Replace req.body with validated data
     req.body = result.data;
     next();
   };

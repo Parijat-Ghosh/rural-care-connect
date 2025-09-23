@@ -1,197 +1,224 @@
-import PatientModel, { IPatient } from '../models/patient-model';
+
+import PatientModel, { IPatient, IFamilyMember } from '../models/patient-model';
 import { Types } from 'mongoose';
 
-export interface CreatePatientDto {
-  primaryPhone?: string;
-  altPhones?: string[];
-  abhaId?: string;
-  firstName: string;
-  lastName?: string;
-  gender?: 'male' | 'female' | 'other' | 'unknown';
-  dob?: string; 
+export interface AddFamilyMemberData {
+  name: string;
+  age: number;
+  relation: string;
+}
+
+export interface UpdateHealthDetailsData {
+  height?: string;
+  weight?: string;
   bloodGroup?: string;
-  address?: {
-    house?: string;
-    street?: string;
-    village?: string;
-    tehsil?: string;
-    district?: string;
-    state?: string;
-    pincode?: string;
-  };
-  comorbidities?: string[];
-  allergies?: string[];
-  emergencyContact?: {
-    name: string;
-    relation?: string;
-    phone: string;
-  };
-  consent?: {
-    telemedicine?: boolean;
-    dataShare?: boolean;
-  };
+  activeHealthStatus?: string;
+  appointment?: string;
 }
 
-export interface FindPatientsQuery {
-  q?: string; 
-  village?: string;
-  limit?: number;
-  skip?: number;
-}
-
-export const createPatient = async (data: CreatePatientDto): Promise<IPatient> => {
+// Get patient by phone number (for main patient)
+export const getPatientByPhone = async (phoneNumber: string): Promise<IPatient | null> => {
   try {
-  
-    const patientData: any = { ...data };
-    if (data.dob) {
-      patientData.dob = new Date(data.dob);
-      
-      const today = new Date();
-      const birthDate = new Date(data.dob);
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      patientData.age = age;
-    }
-
-  
-    patientData.syncVersion = 1;
-    patientData.lastSyncedAt = new Date();
-
-    const patient = new PatientModel(patientData);
-    const savedPatient = await patient.save();
+    const patient = await PatientModel.findOne({ 
+      phoneNumber, 
+      isDeleted: { $ne: true } 
+    }).select('-password');
     
-    return savedPatient;
-  } catch (error: any) {
-    if (error.code === 11000) {
-      
-      const field = Object.keys(error.keyValue)[0];
-      throw new Error(`Patient with this ${field} already exists`);
-    }
+    return patient;
+  } catch (error) {
     throw error;
   }
 };
 
-export const findPatientById = async (id: string): Promise<IPatient | null> => {
+// Add family member to patient
+export const addFamilyMember = async (
+  phoneNumber: string, 
+  familyMemberData: AddFamilyMemberData
+): Promise<IPatient | null> => {
   try {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new Error('Invalid patient ID format');
-    }
-    
     const patient = await PatientModel.findOne({ 
-      _id: id, 
+      phoneNumber, 
       isDeleted: { $ne: true } 
     });
-    
-    return patient;
-  } catch (error) {
-    throw error;
-  }
-};
 
-export const findPatients = async (query: FindPatientsQuery) => {
-  try {
-    const { q, village, limit = 10, skip = 0 } = query;
-    
-   
-    const mongoQuery: any = { isDeleted: { $ne: true } };
-    
-   
-    if (q) {
-      mongoQuery.$or = [
-        { firstName: { $regex: q, $options: 'i' } },
-        { lastName: { $regex: q, $options: 'i' } },
-        { primaryPhone: { $regex: q } },
-      ];
+    if (!patient) {
+      throw new Error('Patient not found');
     }
-    
-    
-    if (village) {
-      mongoQuery['address.village'] = { $regex: village, $options: 'i' };
-    }
-    
-   
-    const [patients, total] = await Promise.all([
-      PatientModel.find(mongoQuery)
-        .select('firstName lastName primaryPhone address.village gender age bloodGroup')
-        .sort({ updatedAt: -1 })
-        .limit(limit)
-        .skip(skip),
-      PatientModel.countDocuments(mongoQuery)
-    ]);
-    
-    return {
-      patients,
-      total,
-      page: Math.floor(skip / limit) + 1,
-      totalPages: Math.ceil(total / limit)
-    };
-  } catch (error) {
-    throw error;
-  }
-};
 
-export const updatePatient = async (id: string, data: Partial<CreatePatientDto>): Promise<IPatient | null> => {
-  try {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new Error('Invalid patient ID format');
-    }
-    
-  
-    const updateData: any = { ...data };
-    if (data.dob) {
-      updateData.dob = new Date(data.dob);
-      
-      const today = new Date();
-      const birthDate = new Date(data.dob);
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      updateData.age = age;
-    }
-    
-   
-    updateData.$inc = { syncVersion: 1 };
-    updateData.lastSyncedAt = new Date();
-    
-    const patient = await PatientModel.findOneAndUpdate(
-      { _id: id, isDeleted: { $ne: true } },
-      updateData,
-      { new: true, runValidators: true }
+    // Check if family member with same name already exists
+    const existingMember = patient.familyMembers.find(
+      member => member.name.toLowerCase() === familyMemberData.name.toLowerCase()
     );
-    
+
+    if (existingMember) {
+      throw new Error('Family member with this name already exists');
+    }
+
+    // Add family member with empty health details
+    const newFamilyMember: IFamilyMember = {
+      name: familyMemberData.name,
+      age: familyMemberData.age,
+      relation: familyMemberData.relation,
+      height: '',
+      weight: '',
+      bloodGroup: '',
+      activeHealthStatus: '',
+      appointment: ''
+    };
+
+    patient.familyMembers.push(newFamilyMember);
+    await patient.save();
+
+    // Return patient without password
+    const updatedPatient = await PatientModel.findOne({ phoneNumber }).select('-password');
+    return updatedPatient;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+// Delete family member
+export const deleteFamilyMember = async (
+  phoneNumber: string,
+  memberName: string
+): Promise<IPatient | null> => {
+  try {
+    const patient = await PatientModel.findOne({ 
+      phoneNumber, 
+      isDeleted: { $ne: true } 
+    });
+
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
+    // Find and remove family member
+    const memberIndex = patient.familyMembers.findIndex(
+      member => member.name.toLowerCase() === memberName.toLowerCase()
+    );
+
+    if (memberIndex === -1) {
+      throw new Error('Family member not found');
+    }
+
+    patient.familyMembers.splice(memberIndex, 1);
+    await patient.save();
+
+    // Return updated patient without password
+    const updatedPatient = await PatientModel.findOne({ phoneNumber }).select('-password');
+    return updatedPatient;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+// Update main patient health details
+export const updateMainPatientHealth = async (
+  phoneNumber: string,
+  healthData: UpdateHealthDetailsData
+): Promise<IPatient | null> => {
+  try {
+    const patient = await PatientModel.findOneAndUpdate(
+      { phoneNumber, isDeleted: { $ne: true } },
+      { $set: healthData },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
     return patient;
   } catch (error: any) {
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyValue)[0];
-      throw new Error(`Patient with this ${field} already exists`);
-    }
     throw error;
   }
 };
 
-export const softDeletePatient = async (id: string): Promise<IPatient | null> => {
+// Update family member health details
+export const updateFamilyMemberHealth = async (
+  phoneNumber: string,
+  memberName: string,
+  healthData: UpdateHealthDetailsData
+): Promise<IPatient | null> => {
   try {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new Error('Invalid patient ID format');
+    const patient = await PatientModel.findOne({ 
+      phoneNumber, 
+      isDeleted: { $ne: true } 
+    });
+
+    if (!patient) {
+      throw new Error('Patient not found');
     }
-    
-    const patient = await PatientModel.findOneAndUpdate(
-      { _id: id, isDeleted: { $ne: true } },
-      { 
-        isDeleted: true,
-        $inc: { syncVersion: 1 },
-        lastSyncedAt: new Date()
-      },
-      { new: true }
+
+    // Find family member
+    const memberIndex = patient.familyMembers.findIndex(
+      member => member.name.toLowerCase() === memberName.toLowerCase()
     );
-    
-    return patient;
-  } catch (error) {
+
+    if (memberIndex === -1) {
+      throw new Error('Family member not found');
+    }
+
+    // Update family member health details
+    Object.keys(healthData).forEach(key => {
+      if (healthData[key as keyof UpdateHealthDetailsData] !== undefined) {
+        (patient.familyMembers[memberIndex] as any)[key] = healthData[key as keyof UpdateHealthDetailsData];
+      }
+    });
+
+    await patient.save();
+
+    // Return updated patient without password
+    const updatedPatient = await PatientModel.findOne({ phoneNumber }).select('-password');
+    return updatedPatient;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+// Get all family members for a patient
+export const getFamilyMembers = async (phoneNumber: string): Promise<IFamilyMember[]> => {
+  try {
+    const patient = await PatientModel.findOne({ 
+      phoneNumber, 
+      isDeleted: { $ne: true } 
+    }).select('familyMembers');
+
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
+    return patient.familyMembers;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+// Get specific family member details
+export const getFamilyMemberByName = async (
+  phoneNumber: string, 
+  memberName: string
+): Promise<IFamilyMember | null> => {
+  try {
+    const patient = await PatientModel.findOne({ 
+      phoneNumber, 
+      isDeleted: { $ne: true } 
+    }).select('familyMembers');
+
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
+    const familyMember = patient.familyMembers.find(
+      member => member.name.toLowerCase() === memberName.toLowerCase()
+    );
+
+    if (!familyMember) {
+      throw new Error('Family member not found');
+    }
+
+    return familyMember;
+  } catch (error: any) {
     throw error;
   }
 };
