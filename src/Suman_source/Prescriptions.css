@@ -1,0 +1,191 @@
+.prescriptions-root {
+  max-width: 410px;
+  margin: 22px auto;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f9fafb;
+  padding-bottom: 30px;
+}
+
+.app-bar {
+  display: flex;
+  align-items: center;
+  position: relative;
+  justify-content: center;
+  padding: 20px 0 10px 0;
+  font-size: 17px;
+  font-weight: bold;
+}
+.back-arrow {
+  font-size: 21px;
+  position: absolute;
+  left: 12px;
+  top: 20px;
+  color: #3875c7;
+  cursor: pointer;
+}
+.page-title {
+  font-size: 17px;
+}
+
+/* Summary Card */
+.summary-card {
+  background: #eaf2fa;
+  border-radius: 14px;
+  padding: 16px 14px;
+  margin-bottom: 16px;
+  text-align: center;
+  border: 1.7px solid #cbe1fb;
+}
+.summary-title {
+  color: #3970c6;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.summary-desc {
+  font-size: 13px;
+  color: #6c7a89;
+  margin-bottom: 10px;
+}
+.summary-counts {
+  display: flex;
+  gap: 26px;
+  justify-content: center;
+  margin-top: 6px;
+}
+.summary-count-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3970c6;
+}
+.summary-count-value.active {
+  color: #18c656;
+}
+.summary-count-label {
+  font-size: 12px;
+  color: #6c7a89;
+}
+
+/* Prescription Cards */
+.prescription-card {
+  background: #fff;
+  border-radius: 13px;
+  margin-bottom: 16px;
+  padding: 16px 11px 14px 18px;
+  border: 1.3px solid #edf2f8;
+  box-shadow: 0 2px 8px rgba(44,80,100,.06);
+}
+.prescription-header {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.doctor-name {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #1f3c54;
+  margin-bottom: 2px;
+}
+.card-sub {
+  color: #8a9ea8;
+  font-size: 13px;
+  margin-bottom: 1px;
+}
+.card-date {
+  font-size: 12.5px;
+  color: #a2aeb1;
+}
+.rx-id {
+  background: #eaf2fa;
+  border-radius: 7px;
+  padding: 2px 12px;
+  color: #3970c6;
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-top: 1px;
+  margin-left: 4px;
+}
+
+.card-icons {
+  margin-left: 9px;
+  display: flex;
+  gap: 8px;
+  color: #a2aeb1;
+  font-size: 17px;
+}
+
+.diagnosis-row {
+  display: flex;
+  font-size: 13px;
+  margin-bottom: 4px;
+  align-items: center;
+  gap: 5px;
+}
+.label {
+  color: #678197;
+  font-weight: 500;
+}
+.value {
+  color: #223142;
+  font-weight: 600;
+}
+.next-visit {
+  color: #e66815;
+  font-weight: 600;
+}
+
+/* Card Actions */
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+}
+.details-btn {
+  flex: 1;
+  padding: 7px 0;
+  background: #eef6ff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #3970c6;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-action {
+  font-size: 17px;
+  padding: 7px 9px;
+  border: none;
+  border-radius: 8px;
+  background: #f7fafd;
+  color: #3970c6;
+  cursor: pointer;
+}
+
+/* Tips Card */
+.tips-card {
+  background: #fffbe4;
+  border: 1px solid #ffe5a3;
+  border-radius: 12px;
+  padding: 13px;
+  margin-bottom: 14px;
+}
+.tips-card h4 {
+  margin: 0 0 7px 0;
+  color: #e6ac00;
+  font-size: 15px;
+}
+.tips-card ul {
+  padding-left: 18px;
+  margin: 0;
+  color: #484d54;
+  font-size: 13px;
+}
+.tips-card li { margin-bottom: 4px; }
