@@ -1,47 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
+import "./PatientDashboard.css";
 import { useNavigate } from "react-router-dom";
-import "./PatientDashboard.css"; // keep your existing CSS file
 
-// Sample data taken from your screenshots / posts
-const upcomingAppointments = [
-  {
-    id: 1,
-    doctor: "Dr. Rajesh Kumar",
-    specialty: "General Medicine",
-    timeText: "Today • 2:30 PM",
-    type: "video",
-  },
-  {
-    id: 2,
-    doctor: "Dr. Priya Singh",
-    specialty: "Cardiology",
-    timeText: "Tomorrow • 10:00 AM",
-    type: "in-person",
-  },
-];
-
-const reminders = [
-  { id: 1, medicine: "Paracetamol", time: "8:00 AM", status: "taken" },
-  { id: 2, medicine: "Vitamin D", time: "2:00 PM", status: "pending" },
-  { id: 3, medicine: "Blood Pressure", time: "8:00 PM", status: "pending" },
-];
-
-export default function PatientDashboard() {
+const PatientDashboard = () => {
   const navigate = useNavigate();
 
-  // navigation helpers
-  const goTo = (path) => {
-    // console.log for debugging while testing
-    console.log("Navigating to", path);
-    navigate(path);
-  };
+  // Medicine reminder state
+  const [reminders, setReminders] = useState([
+    { id: 1, name: "Paracetamol", time: "8:00 AM", status: "taken" },
+    { id: 2, name: "Vitamin D", time: "2:00 PM", status: "pending" },
+    { id: 3, name: "Blood Pressure", time: "8:00 PM", status: "pending" },
+  ]);
 
-  // keyboard helper (Enter / Space)
-  const handleKeyNav = (e, path) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      goTo(path);
-    }
+  // Toggle medicine status
+  const markTaken = (id) => {
+    setReminders((prev) =>
+      prev.map((med) =>
+        med.id === id ? { ...med, status: "taken" } : med
+      )
+    );
   };
 
   return (
@@ -61,32 +38,14 @@ export default function PatientDashboard() {
                 <p className="clinic-location">Serving Nabha, Punjab</p>
               </div>
             </div>
-
             <div className="header-actions">
-              <button
-                className="notification-btn"
-                title="Notifications"
-                onClick={() => console.log("Open notifications")}
-                aria-label="Open notifications"
-              >
+              <button className="notification-btn" title="Notifications">
                 🔔
               </button>
-
-              <button
-                className="language-btn"
-                title="Change Language"
-                onClick={() => console.log("Change language")}
-                aria-label="Change language"
-              >
+              <button className="language-btn" title="Change Language">
                 🌐
               </button>
-
-              <button
-                className="menu-btn"
-                title="Settings"
-                onClick={() => console.log("Open settings")}
-                aria-label="Open settings"
-              >
+              <button className="menu-btn" title="Settings">
                 ⚙️
               </button>
             </div>
@@ -95,15 +54,7 @@ export default function PatientDashboard() {
 
         {/* Emergency SOS Button */}
         <div className="sos-section">
-          <button
-            className="sos-button"
-            onClick={() => {
-              /* hook your SOS flow here */
-              console.log("SOS pressed - call ambulance");
-              alert("Calling Ambulance... (demo)");
-            }}
-            aria-label="Call ambulance"
-          >
+          <button className="sos-button">
             <span className="warning-icon">⚠️</span>
             <div className="sos-text">
               <div className="sos-title">SOS Emergency</div>
@@ -114,29 +65,22 @@ export default function PatientDashboard() {
 
         {/* Quick Actions */}
         <div className="quick-actions">
-          {/* Book Consultation */}
           <div
             className="action-card"
             role="button"
             tabIndex={0}
-            onClick={() => goTo("/book-consultation")}
-            onKeyDown={(e) => handleKeyNav(e, "/book-consultation")}
+            onClick={() => navigate("/book-consultation")}
             style={{ cursor: "pointer" }}
-            aria-label="Book Consultation"
           >
             <div className="action-icon video-icon">📹</div>
             <div className="action-label">Book Consultation</div>
           </div>
-
-          {/* Upload Reports */}
           <div
             className="action-card"
             role="button"
             tabIndex={0}
-            onClick={() => goTo("/upload-reports")}
-            onKeyDown={(e) => handleKeyNav(e, "/upload-reports")}
+            onClick={() => navigate("/upload-reports")}
             style={{ cursor: "pointer" }}
-            aria-label="Upload Reports"
           >
             <div className="action-icon upload-icon">📤</div>
             <div className="action-label">Upload Reports</div>
@@ -149,43 +93,35 @@ export default function PatientDashboard() {
             <span className="section-icon">📅</span>
             <h2 className="section-title">Upcoming Appointments</h2>
           </div>
-
-          {upcomingAppointments.map((appt) => (
-            <div className="appointment-card" key={appt.id}>
-              <div className="appointment-info">
-                <h3 className="doctor-name">{appt.doctor}</h3>
-                <p className="specialty">{appt.specialty}</p>
-                <div className="appointment-time">
-                  <span className="time-icon">🕐</span>
-                  <span className="time-text">{appt.timeText}</span>
-                </div>
-              </div>
-
-              <div className="appointment-actions">
-                <span
-                  className={`appointment-type ${
-                    appt.type === "video" ? "video-call" : "in-person"
-                  }`}
-                >
-                  {appt.type === "video" ? "Video Call" : "In-person"}
-                </span>
-
-                {appt.type === "video" ? (
-                  <button
-                    className="call-button"
-                    title="Join Call"
-                    onClick={() => {
-                      console.log("Join video call for", appt.id);
-                      alert("Joining video call... (demo)");
-                    }}
-                    aria-label={`Join call with ${appt.doctor}`}
-                  >
-                    📞
-                  </button>
-                ) : null}
+          <div className="appointment-card">
+            <div className="appointment-info">
+              <h3 className="doctor-name">Dr. Rajesh Kumar</h3>
+              <p className="specialty">General Medicine</p>
+              <div className="appointment-time">
+                <span className="time-icon">🕐</span>
+                <span className="time-text">Today • 2:30 PM</span>
               </div>
             </div>
-          ))}
+            <div className="appointment-actions">
+              <span className="appointment-type video-call">Video Call</span>
+              <button className="call-button" title="Join Call">
+                📞
+              </button>
+            </div>
+          </div>
+          <div className="appointment-card">
+            <div className="appointment-info">
+              <h3 className="doctor-name">Dr. Priya Singh</h3>
+              <p className="specialty">Cardiology</p>
+              <div className="appointment-time">
+                <span className="time-icon">🕐</span>
+                <span className="time-text">Tomorrow • 10:00 AM</span>
+              </div>
+            </div>
+            <div className="appointment-actions">
+              <span className="appointment-type in-person">In-person</span>
+            </div>
+          </div>
         </div>
 
         {/* Medicine Reminders */}
@@ -194,27 +130,27 @@ export default function PatientDashboard() {
             <span className="section-icon">🔔</span>
             <h2 className="section-title">Medicine Reminders</h2>
           </div>
-
-          {reminders.map((r) => (
-            <div className="reminder-card" key={r.id}>
-              <div className={`reminder-indicator ${r.status === "taken" ? "green" : "orange"}`} />
-              <div className="reminder-info">
-                <h4 className="medicine-name">{r.medicine}</h4>
-                <p className="medicine-time">{r.time}</p>
-              </div>
+          {reminders.map((med) => (
+            <div key={med.id} className="reminder-card">
               <div
-                className={`reminder-status ${r.status === "taken" ? "taken" : "pending"}`}
-                onClick={() => {
-                  if (r.status === "pending") {
-                    console.log(`Marking ${r.medicine} as taken`);
-                    alert(`${r.medicine} marked taken (demo)`);
-                  }
-                }}
-                role={r.status === "pending" ? "button" : undefined}
-                tabIndex={r.status === "pending" ? 0 : undefined}
-              >
-                {r.status === "taken" ? "✓ Taken" : "Mark Taken"}
+                className={`reminder-indicator ${
+                  med.status === "taken" ? "green" : "orange"
+                }`}
+              ></div>
+              <div className="reminder-info">
+                <h4 className="medicine-name">{med.name}</h4>
+                <p className="medicine-time">{med.time}</p>
               </div>
+              {med.status === "taken" ? (
+                <div className="reminder-status taken">✓ Taken</div>
+              ) : (
+                <button
+                  className="reminder-status pending"
+                  onClick={() => markTaken(med.id)}
+                >
+                  Mark Taken
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -222,43 +158,28 @@ export default function PatientDashboard() {
         {/* Additional Services */}
         <div className="section">
           <h2 className="section-title">Additional Services</h2>
-
           <div
             className="service-item"
-            role="button"
-            tabIndex={0}
-            onClick={() => goTo("/ai-doctor")}
-            onKeyDown={(e) => handleKeyNav(e, "/ai-doctor")}
+            onClick={() => navigate("/ai-doctor")}
             style={{ cursor: "pointer" }}
-            aria-label="AI Doctor"
           >
             <div className="service-icon">🤖</div>
             <div className="service-name">AI Doctor</div>
             <div className="service-arrow">→</div>
           </div>
-
           <div
             className="service-item"
-            role="button"
-            tabIndex={0}
-            onClick={() => goTo("/prescriptions")}
-            onKeyDown={(e) => handleKeyNav(e, "/prescriptions")}
+            onClick={() => navigate("/prescriptions")}
             style={{ cursor: "pointer" }}
-            aria-label="Prescriptions"
           >
             <div className="service-icon">💊</div>
             <div className="service-name">Prescriptions</div>
             <div className="service-arrow">→</div>
           </div>
-
           <div
             className="service-item"
-            role="button"
-            tabIndex={0}
-            onClick={() => goTo("/health-records")}
-            onKeyDown={(e) => handleKeyNav(e, "/health-records")}
+            onClick={() => navigate("/health-records")}
             style={{ cursor: "pointer" }}
-            aria-label="Health Records"
           >
             <div className="service-icon">📋</div>
             <div className="service-name">Health Records</div>
@@ -268,4 +189,6 @@ export default function PatientDashboard() {
       </div>
     </div>
   );
-}
+};
+
+export default PatientDashboard;
